@@ -14,8 +14,9 @@ const MAX_LABEL_LENGTH = 100;
 const RATE_LIMIT = 10;
 const RATE_TTL_SEC = 60;
 
-/** UTC オフセット付き ISO 8601（末尾 Z または ±HH:MM / ±HHMM） */
-const ISO_WITH_OFFSET = /(?:Z|[+-]\d{2}:?\d{2})$/i;
+/** UTC オフセット付き ISO 8601（YYYY-MM-DDTHH:mm:ss[.sss]Z|±HH:MM|±HHMM） */
+const ISO_WITH_OFFSET =
+  /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:?\d{2})$/i;
 
 export function parseCountdownInput(
   body: unknown,

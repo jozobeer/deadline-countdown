@@ -72,6 +72,15 @@ describe("parseCountdownInput", () => {
     ).toBeNull();
     expect(parseCountdownInput({ label: "x", targetAt: "not-a-date" })).toBeNull();
   });
+
+  it("RFC 2822 など Date.parse 可能な非ISOは拒否する", () => {
+    expect(
+      parseCountdownInput({
+        label: "締切",
+        targetAt: "Thu, 01 Jan 2026 00:00:00 Z",
+      }),
+    ).toBeNull();
+  });
 });
 
 describe("checkRateLimit", () => {
@@ -166,6 +175,14 @@ describe("POST /api/countdowns バリデーション", () => {
   it("非ISO形式は 400", async () => {
     const res = await postCountdown(
       { label: "締切", targetAt: "not-a-date" },
+      fakeKv(),
+    );
+    expect(res.status).toBe(400);
+  });
+
+  it("RFC 2822 形式は 400", async () => {
+    const res = await postCountdown(
+      { label: "締切", targetAt: "Thu, 01 Jan 2026 00:00:00 Z" },
       fakeKv(),
     );
     expect(res.status).toBe(400);
