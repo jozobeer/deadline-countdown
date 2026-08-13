@@ -1,17 +1,37 @@
 import { useEffect, useState } from "react";
+import { Countdown } from "./Countdown";
+import { CreateForm } from "./CreateForm";
+import "./app.css";
+
+function parseCountdownId(hash: string): string | null {
+  const match = /^#\/c\/([^/]+)$/.exec(hash);
+  return match ? decodeURIComponent(match[1]) : null;
+}
 
 export function App() {
-  const [health, setHealth] = useState<"ok" | "ng" | "checking">("checking");
+  const [hash, setHash] = useState(() => location.hash);
+
   useEffect(() => {
-    fetch("/api/health")
-      .then((r) => setHealth(r.ok ? "ok" : "ng"))
-      .catch(() => setHealth("ng")); // file:// や API 停止でも UI 骨格は描画し続ける
+    const onHashChange = () => setHash(location.hash);
+    window.addEventListener("hashchange", onHashChange);
+    return () => window.removeEventListener("hashchange", onHashChange);
   }, []);
+
+  const id = parseCountdownId(hash);
+
+  function goToCountdown(newId: string) {
+    location.hash = `#/c/${newId}`;
+  }
+
   return (
-    <main style={{ fontFamily: "sans-serif", margin: "2rem" }}>
-      <h1>{"共有カウントダウン"}</h1>
-      <p>{"builder がこのファイルを実装で置き換えます"}</p>
-      <p>API: {health}</p>
+    <main className="app">
+      <header className="hero">
+        <h1 className="hero__title">共有カウントダウン</h1>
+        <p className="hero__lead">
+          締切や記念日までの残り時間を、URLひとつで共有できます。
+        </p>
+      </header>
+      {id ? <Countdown id={id} /> : <CreateForm onCreated={goToCountdown} />}
     </main>
   );
 }
