@@ -3,6 +3,6 @@
   "main": "src/worker/index.ts",
   "compatibility_date": "2026-07-01",
   "assets": { "directory": "./public" },
-  "kv_namespaces": [{ "binding": "KV", "id": "00000000000000000000000000000000" }],
+  "kv_namespaces": [{ "binding": "KV", "id": "93795b195bf744029ad0a8ef382e7da8" }],
   "routes": [{ "pattern": "deadline-countdown.jozo.beer", "custom_domain": true }]
 }
