@@ -88,3 +88,49 @@ test("file:// では API 不達でもタイトルとフッターが描画され�
   );
   await expect(page.getByTestId("days")).toHaveCount(0);
 });
+
+function webApplicationNode(parsed: unknown): Record<string, unknown> | undefined {
+  const nodes = Array.isArray(parsed)
+    ? parsed
+    : parsed && typeof parsed === "object"
+      ? [parsed, ...(((parsed as { "@graph"?: unknown[] })["@graph"] ?? []))]
+      : [];
+  return nodes.find((node) => {
+    if (!node || typeof node !== "object") return false;
+    const type = (node as { "@type"?: unknown })["@type"];
+    return type === "WebApplication" || (Array.isArray(type) && type.includes("WebApplication"));
+  }) as Record<string, unknown> | undefined;
+}
+
+test("公開ページに空でない meta description がある", async ({ page }) => {
+  await page.goto("/");
+  const content = await page.locator('meta[name="description"]').getAttribute("content");
+  expect(content?.trim()).toBeTruthy();
+});
+
+test("公開ページに WebApplication の JSON-LD がある", async ({ page }) => {
+  await page.goto("/");
+  const scripts = page.locator('script[type="application/ld+json"]');
+  await expect(scripts.first()).toBeAttached({ timeout: 5000 });
+  const count = await scripts.count();
+  let app: Record<string, unknown> | undefined;
+  for (let i = 0; i < count; i++) {
+    const raw = await scripts.nth(i).textContent();
+    if (!raw?.trim()) continue;
+    app = webApplicationNode(JSON.parse(raw));
+    if (app) break;
+  }
+  expect(app).toBeTruthy();
+  expect(String(app!.name ?? "").trim()).toBeTruthy();
+  expect(String(app!.description ?? "").trim()).toBeTruthy();
+  expect(String(app!.url ?? "").trim()).toBeTruthy();
+  expect(String(app!.applicationCategory ?? "").trim()).toBeTruthy();
+  const offers = app!.offers as { price?: unknown } | undefined;
+  expect(offers?.price).toBe("0");
+});
+
+test("使い方と FAQ のセクションが初期表示にある", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("heading", { name: "使い方" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "FAQ" })).toBeVisible();
+});

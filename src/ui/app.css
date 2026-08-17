@@ -210,6 +210,54 @@ button[type="submit"]:disabled {
   color: var(--error);
 }
 
+.guide {
+  margin-top: 2.75rem;
+  padding-top: 1.75rem;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.guide section + section {
+  margin-top: 1.75rem;
+}
+
+.guide h2 {
+  margin: 0 0 0.75rem;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 550;
+  color: var(--ink);
+}
+
+.guide ol {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.guide li + li {
+  margin-top: 0.4rem;
+}
+
+.guide dl {
+  margin: 0;
+}
+
+.guide dt {
+  margin-top: 0.85rem;
+  font-weight: 650;
+  color: var(--ink);
+}
+
+.guide dt:first-child {
+  margin-top: 0;
+}
+
+.guide dd {
+  margin: 0.25rem 0 0;
+}
+
 @keyframes rise {
   from {
     opacity: 0;
